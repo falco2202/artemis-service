@@ -1,0 +1,14 @@
+[
+  {
+    "name": "artemis-gitlab-data"
+  },
+  {
+    "name": "artemis-gitlab-logs"
+  },
+  {
+    "name": "artemis-gitlab-config"
+  },
+  {
+    "name": "gitlab-local-setup"
+  }
+]

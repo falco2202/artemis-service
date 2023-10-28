@@ -1,0 +1,167 @@
+[
+  {
+    "name": "artemis-app",
+    "image": "ghcr.io/ls1intum/artemis",
+    "cpu": 0,
+    "portMappings": [
+      {
+        "containerPort": 8080,
+        "hostPort": 8080
+      }
+    ],
+    "essential": true,
+    "environment": [
+      {
+        "name": "ARTEMIS_USERMANAGEMENT_INTERNALADMIN_PASSWORD",
+        "value": "artemis_admin"
+      },
+      {
+        "name": "JHIPSTER_REGISTRY_PASSWORD",
+        "value": "AN-ADMIN-PASSWORD-THAT-MUST-BE-CHANGED (FROM REGISTRY CONFIG)"
+      },
+      {
+        "name": "ARTEMIS_VERSIONCONTROL_PASSWORD",
+        "value": "L0ng3r&Str0ng3rP@ssw0rd"
+      },
+      {
+        "name": "ARTEMIS_USERMANAGEMENT_INTERNALADMIN_USERNAME",
+        "value": "artemis_admin"
+      },
+      {
+        "name": "SPRING_DATASOURCE_URL",
+        "value": "jdbc:mysql://${database_endpoint}/Artemis?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC"
+      },
+      {
+        "name": "JHIPSTER_SECURITY_AUTHENTICATION_JWT_BASE64SECRET",
+        "value": "bXktc2VjcmV0LWtleS13aGljaC1zaG91bGQtYmUtY2hhbmdlZC1pbi1wcm9kdWN0aW9uLWFuZC1iZS1iYXNlNjQtZW5jb2RlZAo"
+      },
+      {
+        "name": "SPRING_PROFILES_ACTIVE",
+        "value": "artemis,scheduling,gitlab,jenkins,prod,docker"
+      },
+      {
+        "name": "SPRING_DATASOURCE_USERNAME",
+        "value": "${database_username}"
+      },
+      {
+        "name": "ARTEMIS_CONTINUOUSINTEGRATION_VCSCREDENTIALS",
+        "value": "artemis_gitlab_admin_credentials"
+      },
+      {
+        "name": "ARTEMIS_USERMANAGEMENT_USEEXTERNAL",
+        "value": "false"
+      },
+      {
+        "name": "ARTEMIS_CONTINUOUSINTEGRATION_PASSWORD",
+        "value": "artemis_admin"
+      },
+      {
+        "name": "ARTEMIS_CONTINUOUSINTEGRATION_ARTEMISAUTHENTICATIONTOKENVALUE",
+        "value": "artemis_admin"
+      },
+      {
+        "name": "ARTEMIS_VERSIONCONTROL_URL",
+        "value": "${gitlab_url}"
+      },
+      {
+        "name": "SPRING_WEBSOCKET_BROKER_PASSWORD",
+        "value": "guest"
+      },
+      {
+        "name": "ARTEMIS_VERSIONCONTROL_TOKEN",
+        "value": "${gitlab_token}"
+      },
+      {
+        "name": "SPRING_DATASOURCE_PASSWORD",
+        "value": "${database_password}"
+      },
+      {
+        "name": "ARTEMIS_CONTINUOUSINTEGRATION_SECRETPUSHTOKEN",
+        "value": "${jenkins_secret_push_token}"
+      },
+      {
+        "name": "SPRING_WEBSOCKET_BROKER_USERNAME",
+        "value": "guest"
+      },
+      {
+        "name": "ARTEMIS_CONTINUOUSINTEGRATION_ARTEMISAUTHENTICATIONTOKENKEY",
+        "value": "artemis_notification_plugin_token"
+      },
+      {
+        "name": "ARTEMIS_VERSIONCONTROL_USER",
+        "value": "root"
+      },
+      {
+        "name": "SERVER_URL",
+        "value": "${artemis_url}"
+      },
+      {
+        "name": "ARTEMIS_CONTINUOUSINTEGRATION_USER",
+        "value": "artemis_admin"
+      },
+      {
+        "name": "ARTEMIS_CONTINUOUSINTEGRATION_URL",
+        "value": "${jenkins_url}"
+      }
+    ],
+    "mountPoints": [
+      {
+        "sourceVolume": "artemis-data",
+        "containerPath": "/opt/artemis/data"
+      }
+    ],
+    "volumesFrom": [],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-create-group": "true",
+        "awslogs-group": "/ecs/ecs-artemis",
+        "awslogs-region": "ap-southeast-1",
+        "awslogs-stream-prefix": "ecs"
+      },
+      "secretOptions": []
+    },
+    "healthCheck": {
+      "command": [
+        "CMD-SHELL",
+        "wget -nv -t1 --spider http://127.0.0.1:8080/actuator/health"
+      ],
+      "interval": 5,
+      "timeout": 5,
+      "retries": 3,
+      "startPeriod": 300
+    }
+  },
+  {
+    "name": "${container_name}",
+    "image": "falco2202/artemis-nginx:latest",
+    "cpu": 0,
+    "portMappings": [
+      {
+        "containerPort": 443,
+        "hostPort": 443
+      },
+      {
+        "containerPort": 80,
+        "hostPort": 80
+      }
+    ],
+    "essential": true,
+    "environment": [],
+    "environmentFiles": [],
+    "mountPoints": [],
+    "volumesFrom": [],
+    "dependsOn": [
+      {
+        "containerName": "artemis-app",
+        "condition": "HEALTHY"
+      }
+    ],
+    "healthCheck": {
+      "command": ["CMD-SHELL", "service nginx status || exit 1"],
+      "interval": 60,
+      "timeout": 5,
+      "retries": 3
+    }
+  }
+]

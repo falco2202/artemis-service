@@ -1,0 +1,40 @@
+[
+  {
+    "name": "${container_name}",
+    "image": "falco2202/artemis-jenkins:v2",
+    "cpu": 0,
+    "portMappings": [
+      {
+        "containerPort": 8080,
+        "hostPort": 8080
+      }
+    ],
+    "essential": true,
+    "environment": [
+      {
+        "name": "CASC_JENKINS_CONFIG",
+        "value": "/usr/share/jenkins/ref/jenkins-casc-config.yml"
+      },
+      {
+        "name": "JAVA_OPTS",
+        "value": "-Djenkins.install.runSetupWizard=false"
+      }
+    ],
+    "mountPoints": [
+      {
+        "sourceVolume": "artemis-jenkins-data",
+        "containerPath": "/var/jenkins_home"
+      }
+    ],
+    "volumesFrom": [],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-create-group": "true",
+        "awslogs-group": "/ecs/artemis-jenkins",
+        "awslogs-region": "ap-southeast-1",
+        "awslogs-stream-prefix": "ecs"
+      }
+    }
+  }
+]

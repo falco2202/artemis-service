@@ -1,0 +1,59 @@
+[
+  {
+    "name": "${container_name}",
+    "image": "markpage2k1/gitlab-artemis:v1.0.0",
+    "portMappings": [
+      {
+        "containerPort": 80,
+        "hostPort": 80
+      },
+      {
+        "containerPort": 22,
+        "hostPort": 22
+      }
+    ],
+    "essential": true,
+    "environment": [
+      {
+        "name": "GITLAB_ROOT_PASSWORD",
+        "value": "${password}"
+      },
+      {
+        "name": "GITLAB_OMNIBUS_CONFIG",
+        "value": "prometheus_monitoring['enable'] = false; gitlab_rails['gitlab_shell_ssh_port'] = 2222; gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']"
+      }
+    ],
+    "mountPoints": [
+      {
+        "sourceVolume": "artemis-gitlab-data",
+        "containerPath": "/var/opt/gitlab"
+      },
+      {
+        "sourceVolume": "artemis-gitlab-logs",
+        "containerPath": "/var/log/gitlab"
+      },
+      {
+        "sourceVolume": "artemis-gitlab-config",
+        "containerPath": "/etc/gitlab"
+      }
+    ],
+    "volumesFrom": [],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-create-group": "true",
+        "awslogs-group": "/ecs/gitlab-artemis",
+        "awslogs-region": "ap-southeast-1",
+        "awslogs-stream-prefix": "ecs"
+      },
+      "secretOptions": []
+    },
+    "healthCheck": {
+      "command": ["CMD-SHELL", "curl -f http://localhost/-/health"],
+      "interval": 300,
+      "timeout": 30,
+      "retries": 5,
+      "startPeriod": 300
+    }
+  }
+]
